@@ -1,0 +1,43 @@
+# Render Blueprint for GoCore
+#
+# This project is a static React + Vite site (no backend server), so it must be
+# deployed as a Render **Static Site** — a Web Service expects a long-running
+# server and runs `npm start`, which this project does not have
+# ("Error: Command \"start\" not found").
+#
+# Deploy: Render Dashboard -> New -> Blueprint -> pick this repo.
+# All settings below are applied automatically.
+
+services:
+  - type: static_site
+    name: gocore
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: true
+
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      # Hash routing (#/dashboard) — no SPA rewrite rules needed.
+      - path: /images/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      # index.html must always be revalidated (JS/CSS are inlined into it)
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache

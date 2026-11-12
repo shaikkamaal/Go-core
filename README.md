@@ -30,19 +30,27 @@ vercel --prod
 ```
 `vercel.json` already sets the Vite framework preset, output dir and headers. Or import the repo at https://vercel.com/new.
 
-### Option 3 — GitHub Pages (automatic)
+### Option 3 — Render
+This is a **static site** (no server), so create a **Static Site**, *not* a Web Service:
+1. Render Dashboard → **New → Static Site** → connect the repo (or **New → Blueprint** — `render.yaml` sets everything automatically).
+2. If creating manually: **Build Command** `npm ci && npm run build`, **Publish Directory** `dist`.
+3. Deploy. Done.
+
+> **`Error: Command "start" not found`?** That means the service was created as a **Web Service** (Node). Render's Web Service runs `npm start`, but this project has no `start` script because it needs no server. Fix: delete the Web Service and create a **Static Site** (above). Alternatives: set the Web Service's *Environment* to **Docker** (the `Dockerfile` builds with Node and serves via nginx), or keep it Node and set *Start Command* to `npm run preview -- --host 0.0.0.0 --port $PORT`.
+
+### Option 4 — GitHub Pages (automatic)
 1. Push this project to a GitHub repo on branch `main`.
 2. Repo → **Settings → Pages → Source: GitHub Actions**.
 3. Every push to `main` runs `.github/workflows/deploy.yml` and publishes the site.
 
-### Option 4 — Docker / your own server
+### Option 5 — Docker / your own server
 ```bash
 docker build -t gocore-web .
 docker run -d -p 80:80 --name gocore gocore-web
 ```
 Uses a multi-stage build (Node → nginx) with gzip, caching and security headers (`nginx.conf`).
 
-### Option 5 — Any static host (S3 + CloudFront, Firebase Hosting, cPanel…)
+### Option 6 — Any static host (S3 + CloudFront, Firebase Hosting, cPanel…)
 Upload the contents of `dist/` to the web root. That's all.
 
 ### Custom domain + HTTPS
