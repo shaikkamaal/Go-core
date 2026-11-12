@@ -30,19 +30,29 @@ vercel --prod
 ```
 `vercel.json` already sets the Vite framework preset, output dir and headers. Or import the repo at https://vercel.com/new.
 
-### Option 3 — GitHub Pages (automatic)
+### Option 3 — Render
+`npm start` builds the site and serves `dist/` via the zero-dependency `server.js`, so the default **Web Service** setup just works:
+1. Render Dashboard → **New → Web Service** → connect the repo, Environment **Node**.
+2. Commands can stay at their defaults (**Build Command** `npm install`, **Start Command** `npm start`) — or set Build Command to `npm ci && npm run build`.
+3. Deploy. Done.
+
+Prefer no server at all? Create a **Static Site** instead (**New → Blueprint** applies `render.yaml` automatically): Build Command `npm ci && npm run build`, Publish Directory `dist`.
+
+> **`Error: Command "start" not found`?** The service is running a start command that isn't `npm start`. Open the service's **Settings → Build & Deploy** and set **Start Command** to `npm start`, and **Build Command** to `npm install` (or `npm ci && npm run build`) if it still shows a pip/gunicorn command left over from an earlier Python attempt. This error is about the *service's start command*, not the language setting — switching Python 3 ↔ Node does not fix it.
+
+### Option 4 — GitHub Pages (automatic)
 1. Push this project to a GitHub repo on branch `main`.
 2. Repo → **Settings → Pages → Source: GitHub Actions**.
 3. Every push to `main` runs `.github/workflows/deploy.yml` and publishes the site.
 
-### Option 4 — Docker / your own server
+### Option 5 — Docker / your own server
 ```bash
 docker build -t gocore-web .
 docker run -d -p 80:80 --name gocore gocore-web
 ```
 Uses a multi-stage build (Node → nginx) with gzip, caching and security headers (`nginx.conf`).
 
-### Option 5 — Any static host (S3 + CloudFront, Firebase Hosting, cPanel…)
+### Option 6 — Any static host (S3 + CloudFront, Firebase Hosting, cPanel…)
 Upload the contents of `dist/` to the web root. That's all.
 
 ### Custom domain + HTTPS
