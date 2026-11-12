@@ -31,12 +31,14 @@ vercel --prod
 `vercel.json` already sets the Vite framework preset, output dir and headers. Or import the repo at https://vercel.com/new.
 
 ### Option 3 — Render
-This is a **static site** (no server), so create a **Static Site**, *not* a Web Service:
-1. Render Dashboard → **New → Static Site** → connect the repo (or **New → Blueprint** — `render.yaml` sets everything automatically).
-2. If creating manually: **Build Command** `npm ci && npm run build`, **Publish Directory** `dist`.
+`npm start` builds the site and serves `dist/` via the zero-dependency `server.js`, so the default **Web Service** setup just works:
+1. Render Dashboard → **New → Web Service** → connect the repo, Environment **Node**.
+2. Commands can stay at their defaults (**Build Command** `npm install`, **Start Command** `npm start`) — or set Build Command to `npm ci && npm run build`.
 3. Deploy. Done.
 
-> **`Error: Command "start" not found`?** That means the service was created as a **Web Service** (Node). Render's Web Service runs `npm start`, but this project has no `start` script because it needs no server. Fix: delete the Web Service and create a **Static Site** (above). Alternatives: set the Web Service's *Environment* to **Docker** (the `Dockerfile` builds with Node and serves via nginx), or keep it Node and set *Start Command* to `npm run preview -- --host 0.0.0.0 --port $PORT`.
+Prefer no server at all? Create a **Static Site** instead (**New → Blueprint** applies `render.yaml` automatically): Build Command `npm ci && npm run build`, Publish Directory `dist`.
+
+> **`Error: Command "start" not found`?** The service is running a start command that isn't `npm start`. Open the service's **Settings → Build & Deploy** and set **Start Command** to `npm start`, and **Build Command** to `npm install` (or `npm ci && npm run build`) if it still shows a pip/gunicorn command left over from an earlier Python attempt. This error is about the *service's start command*, not the language setting — switching Python 3 ↔ Node does not fix it.
 
 ### Option 4 — GitHub Pages (automatic)
 1. Push this project to a GitHub repo on branch `main`.
